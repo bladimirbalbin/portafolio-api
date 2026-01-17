@@ -8,9 +8,10 @@ import (
 	"github.com/bladimirbalbin/portafolio-api/internal/http/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewRouter(cfg config.Config) http.Handler {
+func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -18,7 +19,7 @@ func NewRouter(cfg config.Config) http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(15 * time.Second))
 
-	r.Get("/health", handlers.Health())
+	r.Get("/health", handlers.Health(db))
 
 	return r
 }

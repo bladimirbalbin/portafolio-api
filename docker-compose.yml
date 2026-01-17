@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: portafolio_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portafolio
+      POSTGRES_USER: portafolio
+      POSTGRES_PASSWORD: portafolio
+    ports:
+      - "5433:5432"
+    volumes:
+      - portafolio_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portafolio -d portafolio"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  portafolio_pgdata:

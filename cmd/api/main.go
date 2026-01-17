@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -10,14 +11,21 @@ import (
 
 	"github.com/bladimirbalbin/portafolio-api/internal/config"
 	aphttp "github.com/bladimirbalbin/portafolio-api/internal/http"
+	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
 )
 
 func main() {
 	cfg := config.Load()
 
+	db, err := postgres.NewPool(cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("database connection failed: %v", err)
+	}
+	defer db.Close()
+
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           aphttp.NewRouter(cfg),
+		Handler:           aphttp.NewRouter(cfg, db),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -32,5 +40,9 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
 
-	log.Println("shutting down server")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_ = server.Shutdown(ctx)
+	log.Println("bye")
 }
