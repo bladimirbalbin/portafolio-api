@@ -1,0 +1,40 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Portafolio API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/projects": {
+      "get": {
+        "summary": "List projects",
+        "parameters": [
+          { "name": "featured", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "tag", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["featured", "recent"] } }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/projects/{slug}": {
+      "get": {
+        "summary": "Get project by slug",
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  }
+}
