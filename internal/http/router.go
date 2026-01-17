@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
 )
 
 func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
@@ -20,6 +21,8 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 	r.Use(middleware.Timeout(15 * time.Second))
 
 	r.Get("/health", handlers.Health(db))
+	projectRepo := postgres.NewProjectRepo(db)
+	r.Get("/projects", handlers.ListProjects(projectRepo))
 
 	return r
 }
