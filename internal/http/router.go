@@ -24,6 +24,7 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 
 	projectRepo := postgres.NewProjectRepo(db)
 	r.Get("/projects", handlers.ListProjects(projectRepo))
+	r.Get("/projects/", handlers.ListProjects(projectRepo)) 
 	r.Get("/projects/{slug}", handlers.GetProjectBySlug(projectRepo))
 	r.Get("/docs/openapi.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/openapi.json")
