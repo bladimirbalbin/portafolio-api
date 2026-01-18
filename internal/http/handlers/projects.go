@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/bladimirbalbin/portafolio-api/internal/domain"
 	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
 	"github.com/go-chi/chi/v5"
 )
@@ -76,29 +79,34 @@ func ListProjects(repo *postgres.ProjectRepo) http.HandlerFunc {
 	}
 }
 
-func GetProjectBySlug(repo *postgres.ProjectRepo) http.HandlerFunc {
+func GetProjectBySlug(repo interface {
+	GetBySlug(ctx context.Context, slug string) (*domain.Project, error)
+}) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
 		slug := chi.URLParam(r, "slug")
 		if slug == "" {
 			w.WriteHeader(http.StatusBadRequest)
-			_ = json.NewEncoder(w).Encode(map[string]any{"error": "missing slug"})
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"error": "slug is required",
+			})
 			return
 		}
-
 		p, err := repo.GetBySlug(r.Context(), slug)
 		if err != nil {
+			if errors.Is(err, postgres.ErrNotFound) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				_ = json.NewEncoder(w).Encode(map[string]any{"error": "project not found"})
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			_ = json.NewEncoder(w).Encode(map[string]any{"error": "internal error"})
 			return
 		}
-		if p == nil {
-			w.WriteHeader(http.StatusNotFound)
-			_ = json.NewEncoder(w).Encode(map[string]any{"error": "project not found"})
-			return
-		}
 
+		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{"data": p})
 	}
 }

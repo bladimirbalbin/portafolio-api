@@ -9,6 +9,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+var ErrNotFound = errors.New("project not found")
+
 type ProjectRepo struct {
 	db *pgxpool.Pool
 }
@@ -95,9 +97,10 @@ LIMIT 1;
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}
 	return &p, nil
 }
+
