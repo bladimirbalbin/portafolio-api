@@ -61,3 +61,28 @@ Endpoints:
 - /health
 - /projects
 - /docs/openapi.json
+
+🗄️ Base de datos
+* PostgreSQL gestionado en Render
+* Esquema creado mediante migraciones SQL versionadas
+* Driver: pgx / pgxpool
+* Conexión configurada vía DATABASE_URL
+
+🧱 Arquitectura
+
+Este proyecto sigue una arquitectura por capas, orientada a mantenibilidad:
+- domain → modelos del negocio
+- repository → acceso a datos (PostgreSQL)
+- http/handlers → capa HTTP
+- config → configuración por entorno
+- cmd/api → punto de entrada
+
+🚀 Deploy
+
+Web Service desplegado en Render
+- Base de datos PostgreSQL gestionada en Render
+- Build automático desde main
+- Migraciones ejecutadas manualmente para control total
+
+🔗 Demo pública
+👉 https://portafolio-api-xiw6.onrender.com
