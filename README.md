@@ -52,3 +52,12 @@ portafolio-api/
 ├── go.sum
 └── README.md
 
+## 🌍 Live Demo
+
+Base URL:
+https://portafolio-api-xiw6.onrender.com
+
+Endpoints:
+- /health
+- /projects
+- /docs/openapi.json
