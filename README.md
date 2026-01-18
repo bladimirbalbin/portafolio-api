@@ -86,3 +86,5 @@ Web Service desplegado en Render
 
 🔗 Demo pública
 👉 https://portafolio-api-xiw6.onrender.com
+
+Decisiones técnicas: docs/DECISIONES_TECNICAS.md
