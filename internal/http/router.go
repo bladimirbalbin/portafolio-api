@@ -6,11 +6,11 @@ import (
 
 	"github.com/bladimirbalbin/portafolio-api/internal/config"
 	"github.com/bladimirbalbin/portafolio-api/internal/http/handlers"
+	appmw "github.com/bladimirbalbin/portafolio-api/internal/http/middleware"
 	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
-	appmw "github.com/bladimirbalbin/portafolio-api/internal/http/middleware"
 )
 
 func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
@@ -25,7 +25,7 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 
 	projectRepo := postgres.NewProjectRepo(db)
 	r.Get("/projects", handlers.ListProjects(projectRepo))
-	r.Get("/projects/", handlers.ListProjects(projectRepo)) 
+	r.Get("/projects/", handlers.ListProjects(projectRepo))
 	r.Get("/projects/{slug}", handlers.GetProjectBySlug(projectRepo))
 	r.Get("/docs/openapi.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/openapi.json")
@@ -33,7 +33,7 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 
 	r.Post("/auth/login", handlers.Login)
 
-		// -------- PROTECTED --------
+	// -------- PROTECTED --------
 	r.Group(func(pr chi.Router) {
 		pr.Use(appmw.JWT)
 
@@ -41,7 +41,6 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 		pr.Put("/projects/{slug}", handlers.UpdateProject(projectRepo))
 		pr.Delete("/projects/{slug}", handlers.DeleteProject(projectRepo))
 	})
-
 
 	return r
 }

@@ -9,11 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bladimirbalbin/portafolio-api/internal/auth"
 	"github.com/bladimirbalbin/portafolio-api/internal/config"
 	aphttp "github.com/bladimirbalbin/portafolio-api/internal/http"
 	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
-	"github.com/bladimirbalbin/portafolio-api/internal/auth"
-	
 )
 
 func main() {

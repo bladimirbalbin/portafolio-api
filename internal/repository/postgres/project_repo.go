@@ -161,5 +161,3 @@ func (r *ProjectRepo) DeleteBySlug(ctx context.Context, slug string) error {
 	}
 	return nil
 }
-
-
