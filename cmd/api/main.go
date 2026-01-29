@@ -12,9 +12,16 @@ import (
 	"github.com/bladimirbalbin/portafolio-api/internal/config"
 	aphttp "github.com/bladimirbalbin/portafolio-api/internal/http"
 	"github.com/bladimirbalbin/portafolio-api/internal/repository/postgres"
+	"github.com/bladimirbalbin/portafolio-api/internal/auth"
+	
 )
 
 func main() {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		log.Fatal("JWT_SECRET is empty")
+	}
+	auth.JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 	cfg := config.Load()
 
 	db, err := postgres.NewPool(cfg.DatabaseURL)

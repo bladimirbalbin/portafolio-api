@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	appmw "github.com/bladimirbalbin/portafolio-api/internal/http/middleware"
 )
 
 func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
@@ -19,7 +20,7 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(15 * time.Second))
-
+	// --------PUBLIC --------
 	r.Get("/health", handlers.Health(db))
 
 	projectRepo := postgres.NewProjectRepo(db)
@@ -29,6 +30,18 @@ func NewRouter(cfg config.Config, db *pgxpool.Pool) http.Handler {
 	r.Get("/docs/openapi.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/openapi.json")
 	})
+
+	r.Post("/auth/login", handlers.Login)
+
+		// -------- PROTECTED --------
+	r.Group(func(pr chi.Router) {
+		pr.Use(appmw.JWT)
+
+		pr.Post("/projects", handlers.CreateProject(projectRepo))
+		pr.Put("/projects/{slug}", handlers.UpdateProject(projectRepo))
+		pr.Delete("/projects/{slug}", handlers.DeleteProject(projectRepo))
+	})
+
 
 	return r
 }
