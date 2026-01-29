@@ -1,0 +1,135 @@
+{
+  "info": {
+    "name": "Portafolio API",
+    "_postman_id": "portafolio-api-collection",
+    "description": "Collection para probar Portafolio API (JWT + CRUD projects)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://portafolio-api-xiw6.onrender.com"
+    },
+    {
+      "key": "jwt_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Login (Get JWT)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"1234\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('jwt_token', jsonData.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List Projects",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/projects?sort=featured",
+          "host": ["{{base_url}}"],
+          "path": ["projects"],
+          "query": [
+            { "key": "sort", "value": "featured" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Project by Slug",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/projects/cv-api",
+          "host": ["{{base_url}}"],
+          "path": ["projects", "cv-api"]
+        }
+      }
+    },
+    {
+      "name": "Create Project (JWT Required)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"slug\": \"demo-postman\",\n  \"name\": \"Demo Postman\",\n  \"description\": \"Proyecto creado desde Postman\",\n  \"repo_url\": null,\n  \"demo_url\": null,\n  \"tags\": [\"go\", \"api\"],\n  \"featured\": false\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/projects",
+          "host": ["{{base_url}}"],
+          "path": ["projects"]
+        }
+      }
+    },
+    {
+      "name": "Update Project (JWT Required)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo Postman Updated\",\n  \"description\": \"Actualizado desde Postman\",\n  \"repo_url\": null,\n  \"demo_url\": null,\n  \"tags\": [\"go\", \"updated\"],\n  \"featured\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/projects/demo-postman",
+          "host": ["{{base_url}}"],
+          "path": ["projects", "demo-postman"]
+        }
+      }
+    },
+    {
+      "name": "Delete Project (JWT Required)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/projects/demo-postman",
+          "host": ["{{base_url}}"],
+          "path": ["projects", "demo-postman"]
+        }
+      }
+    }
+  ]
+}

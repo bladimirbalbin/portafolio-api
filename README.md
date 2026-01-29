@@ -32,6 +32,26 @@ API REST en Go para gestionar proyectos de portafolio profesional.
 - ADMIN_USER
 - ADMIN_PASS
 
+
+## 🔧 Test with Postman
+
+Import this file into Postman:
+
+👉 `docs/postman_collection.json`
+
+Steps:
+1. Run **Login** request to obtain JWT
+2. Token is stored automatically
+3. Use protected endpoints
+
+Authentication:
+
+This API uses environment-based admin credentials.
+
+ADMIN_USER and ADMIN_PASS must be configured in the environment.
+Login returns a JWT token which must be used as:
+
+Authorization: Bearer <token>
 ## Local (Docker)
 ```bash
 docker compose up -d
